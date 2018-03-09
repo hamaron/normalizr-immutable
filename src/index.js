@@ -3,8 +3,6 @@
 // import { arrayOf, valuesOf, unionOf } from 'normalizr';
 import { Record, Map, List, Iterable } from 'immutable';
 
-//Shim for new Proxy instead of Proxy.create
-import Proxy from 'harmony-proxy';
 //Should patch proxy to work properly
 // import Reflect from 'harmony-reflect';
 
@@ -14,6 +12,7 @@ import UnionSchema from './UnionSchema';
 import lodashIsEqual from 'lodash/isEqual';
 import lodashIsObject from 'lodash/isObject';
 
+let Proxy;
 const NormalizedRecord = new Record({entities:null, result: null}, 'NormalizedRecord');
 const PolymorphicMapper = new Record({id:null, schema: null});
 
@@ -246,6 +245,10 @@ function normalize(obj, schema, options = {
   useMapsForEntityObjects: false,
   useProxyForResults:false
 }) {
+
+  if (options.useProxyForResults) {
+    Proxy = require('harmony-proxy')
+  }
 
   if (!lodashIsObject(obj) && !Array.isArray(obj)) {
     throw new Error('Normalize accepts an object or an array as its input.');
